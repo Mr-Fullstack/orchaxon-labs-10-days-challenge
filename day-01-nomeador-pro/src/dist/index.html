@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nomeador Pro - Gerador de Nomes para Projetos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .copying { animation: pulse 0.5s ease-in-out; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-transparent bg-clip-text gradient-bg mb-3">Nomeador Pro</h1>
+            <p class="text-gray-600 text-lg">Gere nomes únicos e profissionais para seus projetos em segundos</p>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Generator Card -->
+                <div class="bg-white rounded-2xl p-8 card-shadow mb-8">
+                    <div class="space-y-6">
+                        <!-- Keyword Input -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Palavra-chave (Opcional)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="keyword" 
+                                placeholder="Ex: Code, Food, Tech..."
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+                            >
+                            <p class="text-xs text-gray-500 mt-2">Deixe em branco para nomes genéricos</p>
+                        </div>
+
+                        <!-- Style Selector -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Estilo de Nome
+                            </label>
+                            <select 
+                                id="style" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-colors bg-white"
+                            >
+                                <option value="startup">Startup Tech (Moderno e Inovador)</option>
+                                <option value="corporativo">Corporativo (Sério e Profissional)</option>
+                                <option value="criativo">Criativo/Divertido</option>
+                            </select>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <button 
+                            id="generateBtn"
+                            class="w-full gradient-bg text-white font-bold py-4 px-6 rounded-lg text-lg hover:opacity-90 transition-opacity shadow-lg"
+                        >
+                            ✨ Gerar Ideias
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div id="results" class="hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Suas Sugestões de Nomes</h2>
+                    <div id="namesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+
+            <!-- Ad Space -->
+            <aside class="lg:w-80">
+                <div class="bg-gray-100 rounded-lg p-6 text-center sticky top-8">
+                    <div class="bg-gray-200 h-64 flex items-center justify-center rounded-lg mb-4">
+                        <div class="text-gray-400">
+                            <div class="text-4xl mb-2">📢</div>
+                            <p class="font-semibold">Publicidade aqui</p>
+                            <p class="text-sm mt-1">300x250</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Espaço publicitário</p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden">
+            ✓ Copiado!
+        </div>
+    </div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
