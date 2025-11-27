@@ -179,6 +179,67 @@ Calcule o seu também em: ${url}`;
         // Initialize
         calculate();
 
+        // PWA Install Logic
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const btnInstallAccept = document.getElementById('btn-install-accept');
+        const btnInstallDismiss = document.getElementById('btn-install-dismiss');
+
+        // Check if app is already in standalone mode (installed)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+        // Check if user has already dismissed the banner
+        const isDismissed = localStorage.getItem('pwaInstallDismissed');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+
+            // Only show banner if not standalone and not dismissed
+            if (!isStandalone && !isDismissed) {
+                showInstallBanner();
+            }
+        });
+
+        function showInstallBanner() {
+            installBanner.classList.remove('hidden');
+            // Small delay to ensure display:block applies before animation
+            setTimeout(() => {
+                installBanner.classList.add('animate-slide-up-banner');
+            }, 100);
+        }
+
+        function hideInstallBanner() {
+            installBanner.classList.remove('animate-slide-up-banner');
+            installBanner.classList.add('translate-y-[150%]'); // Move out manually
+            setTimeout(() => {
+                installBanner.classList.add('hidden');
+            }, 500);
+        }
+
+        btnInstallAccept.addEventListener('click', async () => {
+            hideInstallBanner();
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+            }
+        });
+
+        btnInstallDismiss.addEventListener('click', () => {
+            hideInstallBanner();
+            localStorage.setItem('pwaInstallDismissed', 'true');
+        });
+
+        // Event listener for when the app is successfully installed
+        window.addEventListener('appinstalled', () => {
+            hideInstallBanner();
+            console.log('PWA was installed');
+        });
+
         // PWA Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
