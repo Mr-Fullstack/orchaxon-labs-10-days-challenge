@@ -1,4 +1,4 @@
-  // State
+// State
         const state = {
             men: 0,
             women: 0,
@@ -179,68 +179,106 @@ Calcule o seu também em: ${url}`;
         // Initialize
         calculate();
 
-        // PWA Install Logic
+        // --------------------------------------------------------
+        // ROBUST PWA INSTALL LOGIC
+        // --------------------------------------------------------
+        
         let deferredPrompt;
         const installBanner = document.getElementById('install-banner');
         const btnInstallAccept = document.getElementById('btn-install-accept');
         const btnInstallDismiss = document.getElementById('btn-install-dismiss');
+        const btnManualInstall = document.getElementById('btn-manual-install');
+        const installText = document.getElementById('install-text');
 
-        // Check if app is already in standalone mode (installed)
+        // Detection
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-        // Check if user has already dismissed the banner
         const isDismissed = localStorage.getItem('pwaInstallDismissed');
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
-            e.preventDefault();
-            // Stash the event so it can be triggered later.
-            deferredPrompt = e;
-
-            // Only show banner if not standalone and not dismissed
-            if (!isStandalone && !isDismissed) {
-                showInstallBanner();
-            }
-        });
-
+        // Functions to manage Banner Visibility
         function showInstallBanner() {
+            if (isStandalone || isDismissed) return;
+            
             installBanner.classList.remove('hidden');
-            // Small delay to ensure display:block applies before animation
-            setTimeout(() => {
-                installBanner.classList.add('animate-slide-up-banner');
-            }, 100);
+            // Small delay to allow browser layout before animation
+            requestAnimationFrame(() => {
+                installBanner.classList.remove('translate-y-[150%]');
+            });
         }
 
         function hideInstallBanner() {
-            installBanner.classList.remove('animate-slide-up-banner');
-            installBanner.classList.add('translate-y-[150%]'); // Move out manually
+            installBanner.classList.add('translate-y-[150%]');
             setTimeout(() => {
                 installBanner.classList.add('hidden');
             }, 500);
         }
 
-        btnInstallAccept.addEventListener('click', async () => {
-            hideInstallBanner();
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                deferredPrompt = null;
+        // 1. IOS HANDLER (No native prompt, show instructions immediately)
+        if (isIOS && !isStandalone && !isDismissed) {
+            // Customize text/button for iOS
+            btnInstallAccept.innerText = "Como instalar?";
+            
+            // Show after 2s to not block initial view immediately
+            setTimeout(showInstallBanner, 2000);
+
+            // iOS Install Action: Show Alert Instructions
+            btnInstallAccept.onclick = () => {
+                alert("📲 Para instalar no iPhone/iPad:\n\n1. Toque no botão de Compartilhar (ícone quadrado com seta).\n2. Role as opções para baixo.\n3. Toque em 'Adicionar à Tela de Início'.");
+            };
+        }
+
+        // 2. ANDROID/CHROME HANDLER (Native Prompt)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67+ from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+
+            // Show manual install button in footer as backup
+            btnManualInstall.classList.remove('hidden');
+
+            // Show banner automatically if not dismissed
+            if (!isStandalone && !isDismissed) {
+                showInstallBanner();
             }
         });
 
+        // Handle "Instalar" click on Android
+        if (!isIOS) {
+            btnInstallAccept.addEventListener('click', async () => {
+                hideInstallBanner();
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                }
+            });
+        }
+
+        // Manual Trigger (Footer Button)
+        btnManualInstall.addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+            } else {
+                alert('A instalação já foi realizada ou não é suportada neste navegador.');
+            }
+        });
+
+        // Global Dismiss
         btnInstallDismiss.addEventListener('click', () => {
             hideInstallBanner();
             localStorage.setItem('pwaInstallDismissed', 'true');
         });
 
-        // Event listener for when the app is successfully installed
+        // Listen for successful install
         window.addEventListener('appinstalled', () => {
             hideInstallBanner();
+            btnManualInstall.classList.add('hidden');
             console.log('PWA was installed');
         });
 
-        // PWA Registration
+        // SW Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')

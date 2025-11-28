@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FF5722">
     
     <!-- Primary Meta Tags -->
@@ -43,6 +43,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!--Orcheaxon Tracker.js -->
+    <script 
+    src="https://orchaxonnexus.netlify.app/tracker.js" 
+    data-project="churrasco-master" 
+    id="orchaxon-tracker" 
+    async>
+   </script>
+
     <!-- Structured Data (JSON-LD) for Google Rich Snippets -->
     <script type="application/ld+json">
     {
@@ -64,12 +72,6 @@
       }
     }
     </script>
-
-    <!-- Tracker Script -->
-    <script src="https://orchaxonnexus.netlify.app/tracker.js" 
-    data-project="churrasco-master" 
-    id="orchaxon-tracker" 
-    async></script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -132,7 +134,6 @@
             border-radius: 4px;
         }
     </style>
-    
 </head>
 <body class="text-stone-800 antialiased min-h-screen flex flex-col pb-safe">
 
@@ -361,14 +362,14 @@
     </main>
 
     <!-- PWA Install Banner (Hidden by default) -->
-    <div id="install-banner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white p-5 rounded-2xl shadow-2xl border border-stone-100 z-50 transform transition-transform duration-500 flex flex-col gap-4 hidden">
+    <div id="install-banner" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white p-5 rounded-2xl shadow-2xl border border-stone-100 z-50 transform translate-y-[150%] transition-transform duration-500 flex flex-col gap-4 hidden">
         <div class="flex items-start gap-4">
             <div class="bg-brand-orange/10 p-3 rounded-xl text-brand-orange shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2"/><path d="M12 12v6"/><path d="M12 18 9 15"/><path d="M15 15 12 18"/></svg>
             </div>
             <div>
                 <h3 class="font-bold text-stone-900">Instalar App</h3>
-                <p class="text-sm text-stone-500 mt-1 leading-relaxed">Adicione o <span class="text-brand-orange font-bold">ChurrascoMaster</span> à sua tela inicial para acesso rápido e funcionamento offline.</p>
+                <p id="install-text" class="text-sm text-stone-500 mt-1 leading-relaxed">Adicione o <span class="text-brand-orange font-bold">ChurrascoMaster</span> à sua tela inicial para acesso rápido e funcionamento offline.</p>
             </div>
         </div>
         <div class="flex gap-3 mt-1">
@@ -382,12 +383,17 @@
     </div>
 
     <!-- Footer -->
-    <footer class="mt-12 mb-4 text-center">
+    <footer class="mt-12 mb-8 text-center space-y-4">
         <p class="text-stone-400 text-xs font-bold tracking-widest uppercase">Developed by OrchAxon Labs</p>
+        
+        <!-- Manual Install Trigger (Fallback) -->
+        <button id="btn-manual-install" class="hidden text-xs text-brand-orange font-semibold hover:underline bg-brand-orange/5 px-3 py-1 rounded-full">
+            📲 Instalar App
+        </button>
     </footer>
 
     <!-- Logic Script -->
-    <script src="../script.js"></script>
+    <script src="./app.js"></script>
 
 </body>
 </html>
