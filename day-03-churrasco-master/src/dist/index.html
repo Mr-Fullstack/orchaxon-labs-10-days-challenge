@@ -147,9 +147,13 @@
     </script>
 
     <style>
+
         body {
             background-color: #f5f5f4; /* Stone 100 */
             -webkit-tap-highlight-color: transparent;
+             /* Impede seleção de texto (sensação de app) */
+            -webkit-user-select: none;
+            user-select: none;
         }
         .btn-press:active {
             transform: scale(0.95);
@@ -165,6 +169,30 @@
             background: #FF5722;
             border-radius: 4px;
         }
+    /* Permite selecionar texto apenas onde faz sentido (inputs, textareas) */
+    input, textarea, [contenteditable="true"] {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
+    /* BLOQUEIO DE COMPORTAMENTOS DE NAVEGADOR */
+    html, body {
+        /* 1. Impede o "Pull-to-Refresh" (Puxar para atualizar) */
+        overscroll-behavior-y: none;
+        
+        /* 2. Impede o gesto de "Voltar Página" no Mac/iOS (Swipe lateral) */
+        overscroll-behavior-x: none;
+        
+        /* 3. Garante altura total e evita rolagem no corpo principal (quem rola é a main) */
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Aplica a rolagem apenas onde queremos (na main) */
+    #main-container {
+        overscroll-behavior-y: contain; /* Mantém a física de scroll, mas não propaga pro body */
+    }
+
     </style>
 </head>
 <body class="text-stone-800 antialiased min-h-screen flex flex-col pb-safe">
@@ -186,7 +214,7 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <main class="container mx-auto px-4 -mt-14 relative z-20 max-w-7xl flex-grow">
+    <main id="main-container" class="container mx-auto px-4 -mt-14 relative z-20 max-w-7xl flex-grow">
         
         <div class="flex flex-col lg:flex-row gap-6 justify-center items-start">
             
