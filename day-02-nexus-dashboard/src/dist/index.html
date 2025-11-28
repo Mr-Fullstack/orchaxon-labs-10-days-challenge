@@ -10,8 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;800&display=swap" rel="stylesheet">
    <script 
-    src="https://orchaxonnexus.netlify.app/tracker.js" 
+    src="../tracker.js" 
     data-project="orchaxon-nexus" 
     id="orchaxon-tracker" 
     async>
@@ -25,13 +28,17 @@
                         primary: '#10b981', // Emerald
                         secondary: '#3b82f6', // Blue
                     },
-                    fontFamily: { mono: ['Courier New', 'monospace'], sans: ['Inter', 'sans-serif'] }
+                    fontFamily: { 
+                    // AQUI ESTÁ A MUDANÇA:
+                        sans: ['Montserrat', 'sans-serif'], 
+                        mono: ['Courier New', 'monospace'] 
+                    }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Montserrat', sans-serif; /* <--- Mudou aqui */ }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
         .loading-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
@@ -53,7 +60,7 @@
 
     <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-8">
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="glass rounded-xl p-6 relative overflow-hidden">
                 <h3 class="text-slate-400 text-xs font-mono uppercase tracking-widest mb-1">Total Hits</h3>
                 <div class="text-4xl font-bold text-white" id="total-views">--</div>
@@ -61,17 +68,56 @@
                     <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
                 </div>
             </div>
+             <div class="glass rounded-xl p-6">
+                <h3 class="text-slate-400 text-xs font-mono uppercase tracking-widest mb-1">Active Projects</h3>
+                <div class="text-2xl font-bold text-secondary" id="active-projects">--</div>
+            </div>
             <div class="glass rounded-xl p-6">
                 <h3 class="text-slate-400 text-xs font-mono uppercase tracking-widest mb-1">Top Project</h3>
                 <div class="text-2xl font-bold text-primary truncate" id="top-project">--</div>
             </div>
-            <div class="glass rounded-xl p-6">
-                <h3 class="text-slate-400 text-xs font-mono uppercase tracking-widest mb-1">Active Projects</h3>
-                <div class="text-2xl font-bold text-secondary" id="active-projects">--</div>
+            <div class="glass rounded-xl p-6 relative overflow-hidden">
+                <h3 class="text-slate-400 text-xs font-mono uppercase tracking-widest mb-1">Avg. Rating</h3>
+                <div class="flex items-end gap-2">
+                    <div class="text-4xl font-bold text-yellow-400" id="avg-rating">--</div>
+                    <div class="text-sm text-slate-500 mb-1">/ 5.0</div>
+                </div>
+                <div class="text-xs text-slate-400 mt-2">Baseado em <span id="total-votes">0</span> votos</div>
+                <div class="absolute right-0 top-0 opacity-10 p-4">
+                    <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                </div>
             </div>
         </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+            
+            <div class="lg:col-span-2 glass rounded-xl p-6 flex flex-col min-h-[400px]">
+                <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Tráfego (Barras) vs Qualidade (Linha)
+                </h3>
+                <div class="relative w-full flex-grow">
+                    <canvas id="hybridChart"></canvas>
+                </div>
+            </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="flex flex-col gap-6 lg:col-span-1 h-full">
+                
+                <div class="glass rounded-xl p-4 flex-1 flex flex-col max-h-[300px]">
+                    <h3 class="text-slate-400 text-xs font-mono uppercase tracking-widest mb-3">📡 Realtime Views</h3>
+                    <div class="flex-grow overflow-y-auto pr-2 space-y-2" id="feed-list">
+                        </div>
+                </div>
+
+                <div class="glass rounded-xl p-4 flex-1 flex flex-col max-h-[300px] border border-yellow-500/20">
+                    <h3 class="text-yellow-400 text-xs font-mono uppercase tracking-widest mb-3">💬 Últimos Feedbacks</h3>
+                    <div class="flex-grow overflow-y-auto pr-2 space-y-3" id="feedback-list">
+                        <div class="text-center text-slate-600 text-xs">Aguardando opiniões...</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 glass rounded-xl p-6">
                 <h3 class="text-white font-bold mb-6 flex items-center gap-2">
                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
@@ -88,7 +134,7 @@
                     <div class="text-center text-slate-600 text-sm py-10">Waiting for data...</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="mt-8 border border-dashed border-slate-700 rounded-xl p-6 bg-slate-900/50">
             <h4 class="text-slate-300 font-bold text-sm mb-3">📡 Instalação do Tracker</h4>
@@ -104,6 +150,6 @@
         <p class="text-slate-600 text-xs font-mono">ORCHAXON LABS v1.0</p>
     </footer>
 
-    <script src="./app.js"></script>
+    <script src="../script.js"></script>
 </body>
 </html>

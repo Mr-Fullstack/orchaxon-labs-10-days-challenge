@@ -7,8 +7,8 @@
     // ⚠️ CONFIGURAÇÃO
     // ==========================================
     const CONFIG = {
-        SUPABASE_URL: 'SUA_URL_SUPABASE_AQUI', 
-        SUPABASE_KEY: 'SUA_KEY_SUPABASE_AQUI',
+        SUPABASE_URL: 'https://bjumbtpoocilxyccxnpa.supabase.co',
+        SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJqdW1idHBvb2NpbHh5Y2N4bnBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMTgzNjgsImV4cCI6MjA3OTc5NDM2OH0.48dp49slcZoPeUvw9Xp-MkxxHhkYSPWzINpaKIXDVwY',
         DELAY_MODAL: 15000 // Tempo em ms para abrir o modal (ex: 15 seg)
     };
 
@@ -94,7 +94,7 @@
                     <span class="oa-star" data-val="4">★</span>
                     <span class="oa-star" data-val="5">★</span>
                 </div>
-                <textarea class="oa-input" id="oa-comment" rows="3" placeholder="Sugestões ou críticas?"></textarea>
+                <textarea class="oa-input oa-title" id="oa-comment" rows="3" placeholder="Sugestões ou críticas?"></textarea>
                 <button class="oa-btn" onclick="submitOrchAxonFeedback()">Enviar Feedback</button>
             </div>
         `;
