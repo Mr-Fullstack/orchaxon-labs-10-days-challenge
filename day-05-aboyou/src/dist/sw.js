@@ -2,6 +2,8 @@ const CACHE_NAME = 'aboyou-v2';
 const urlsToCache = [
   './',
   './index.html',
+  './mobile/index.html',
+  './desktop/index.html',
   './app.js',
   './lang.js',
   './manifest.json',
