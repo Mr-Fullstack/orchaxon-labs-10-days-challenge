@@ -71,7 +71,7 @@
             .oa-stars { display: flex; gap: 5px; margin-bottom: 15px; justify-content: center; }
             .oa-star { cursor: pointer; font-size: 24px; color: #cbd5e1; transition: color 0.2s; }
             .oa-star.active { color: #f59e0b; }
-            .oa-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;}
+            .oa-input { background-color: #fff;  width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-bottom: 10px; font-size: 14px; box-sizing: border-box;}
             .oa-btn { width: 100%; background: #0f172a; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
             .oa-btn:hover { background: #334155; }
             @keyframes slideIn { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
