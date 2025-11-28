@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://churrascomaster.netlify.app/sitemap.xml

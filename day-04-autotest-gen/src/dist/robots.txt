@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nomeadorpro.netlify.app/sitemap.xml
