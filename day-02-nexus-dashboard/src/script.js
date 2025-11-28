@@ -44,7 +44,16 @@ async function initDashboard() {
         views.forEach(v => counts[v.project_name] = (counts[v.project_name] || 0) + 1);
         const top = Object.entries(counts).sort((a,b) => b[1] - a[1])[0];
         document.getElementById('top-project').innerText = top ? top[0] : '-';
+        // Active Projects (A CORREÇÃO)
 
+        // Conta quantas chaves (projetos) diferentes existem no objeto counts
+        const activeCount = Object.keys(counts).length;
+        // Verifica se o elemento existe antes de tentar atualizar para não dar erro
+        const activeEl = document.getElementById('active-projects');
+        if (activeEl) {
+            activeEl.innerText = activeCount;
+        }
+        
         // Avg Rating Global
         if (feedbacks && feedbacks.length) {
             const sum = feedbacks.reduce((acc, curr) => acc + curr.rating, 0);
