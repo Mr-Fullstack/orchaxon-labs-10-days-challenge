@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTest Gen - Unit Test Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background: #0f172a; color: #e2e8f0; }
+        pre, code, textarea, input, .font-mono { font-family: 'Fira Code', 'Consolas', monospace; }
+        
+        .tab-active { background: #1e293b; border-bottom: 2px solid #3b82f6; color: #60a5fa; }
+        
+        /* Animations */
+        .case-item { animation: slideIn 0.2s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .modal-overlay { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); transition: opacity 0.3s; }
+        .modal-content { animation: modalAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalAppear { 
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+
+        /* Syntax Highlighting */
+        .theme-csharp .keyword { color: #569cd6; } .theme-csharp .string { color: #ce9178; } .theme-csharp .comment { color: #6a9955; } .theme-csharp .class-name { color: #4ec9b0; } .theme-csharp .function { color: #dcdcaa; }
+        .theme-kotlin .keyword { color: #cc7832; } .theme-kotlin .string { color: #6a8759; } .theme-kotlin .comment { color: #808080; } .theme-kotlin .class-name { color: #ffc66d; } .theme-kotlin .function { color: #ffc66d; }
+        .theme-typescript .keyword { color: #569cd6; } .theme-typescript .string { color: #ce9178; } .theme-typescript .comment { color: #6a9955; } .theme-typescript .class-name { color: #4ec9b0; } .theme-typescript .function { color: #dcdcaa; }
+        .theme-java .keyword { color: #cc7832; } .theme-java .string { color: #6a8759; } .theme-java .comment { color: #808080; } .theme-java .class-name { color: #e8bf6a; } .theme-java .function { color: #ffc66d; } .theme-java .annotation { color: #bbb529; }
+        .theme-php .keyword { color: #8be9fd; } .theme-php .string { color: #f1fa8c; } .theme-php .comment { color: #6272a4; } .theme-php .class-name { color: #50fa7b; } .theme-php .function { color: #ff79c6; } .theme-php .variable { color: #f8f8f2; }
+        
+        pre { background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 1rem; overflow-x: auto; font-size: 0.875rem; line-height: 1.5; }
+        input, select, textarea { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #3b82f6; }
+        button { transition: all 0.2s; }
+        button:hover:not(:disabled) { transform: translateY(-1px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .terminal-box { background: #000; border: 1px solid #333; border-radius: 8px; padding: 1.5rem; box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+        .cli-section { background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-top: 1px solid #334155; }
+        .lang-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; }
+        .lang-csharp { background: #512bd4; color: white; }
+        .lang-kotlin { background: #7f52ff; color: white; }
+        .lang-typescript { background: #3178c6; color: white; }
+        .lang-java { background: #e76f00; color: white; }
+        .lang-php { background: #777bb3; color: white; }
+    </style>
+    <!--OrchAxon Tracker.js -->
+    <script 
+    src="https://orchaxonnexus.netlify.app/tracker.js" 
+    data-project="autotest-gen" 
+    id="orchaxon-tracker" 
+    async>
+   </script>
+</head>
+<body class="p-6 min-h-screen flex flex-col">
+    <div class="max-w-7xl mx-auto w-full flex-grow">
+        <div class="mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="text-purple-500">⚡</span> AutoTest Gen
+                </h1>
+                <p class="text-slate-400">Generate unit tests like a pro. Clean, fast & secure.</p>
+            </div>
+            <div class="text-xs font-mono text-slate-500 hidden sm:block">v1.0.0</div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6 shadow-xl">
+                <div class="flex items-center border-b border-slate-700 mb-6">
+                    <button id="tabVisual" class="px-4 py-2 tab-active text-sm font-medium transition-colors" onclick="switchTab('visual')">
+                        Visual Builder
+                    </button>
+                    <button id="tabJson" class="px-4 py-2 text-slate-400 hover:text-white text-sm font-medium transition-colors" onclick="switchTab('json')">
+                        Raw JSON
+                    </button>
+                    <button onclick="openModal()" class="ml-auto px-3 py-1 text-xs bg-slate-700 hover:bg-slate-600 rounded text-blue-300 transition-colors flex items-center gap-1">
+                        <span class="text-lg">💡</span> JSON Guide
+                    </button>
+                </div>
+
+                <div id="visualBuilder">
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">
+                                Language & Framework
+                                <span id="langBadge" class="lang-badge lang-csharp">C#</span>
+                            </label>
+                            <select id="language" class="w-full px-3 py-3 rounded-lg bg-slate-900 border-slate-700 focus:border-purple-500 cursor-pointer" onchange="updateOutput(); updateLangBadge()">
+                                <option value="csharp">C# (xUnit)</option>
+                                <option value="kotlin">Kotlin (JUnit)</option>
+                                <option value="typescript">TypeScript (Jest)</option>
+                                <option value="java">Java (JUnit 5)</option>
+                                <option value="php">PHP (PHPUnit)</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">Target Class</label>
+                                <input type="text" id="className" placeholder="PaymentService" class="w-full px-3 py-2 rounded-lg bg-slate-900 border-slate-700 focus:border-purple-500 font-mono" oninput="updateOutput()">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">Target Method</label>
+                                <input type="text" id="methodName" placeholder="ProcessPayment" class="w-full px-3 py-2 rounded-lg bg-slate-900 border-slate-700 focus:border-purple-500 font-mono" oninput="updateOutput()">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">Test Scenarios</label>
+                            <div id="casesList" class="space-y-2 mb-3"></div>
+                            <button onclick="addCase()" class="w-full px-4 py-2 border border-dashed border-slate-600 hover:border-purple-500 text-slate-400 hover:text-purple-400 rounded-lg text-sm font-medium transition-colors">
+                                + Add Scenario
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="jsonBuilder" class="hidden">
+                    <textarea id="jsonInput" rows="18" class="w-full px-3 py-2 rounded-lg bg-slate-900 border-slate-700 focus:border-purple-500 font-mono text-sm leading-relaxed" oninput="syncFromJson()" placeholder='{
+  "lang": "csharp",
+  "class": "PaymentService",
+  "method": "ProcessPayment",
+  "cases": [
+    "Should return false if balance is zero"
+  ]
+}'></textarea>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-6 shadow-xl flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Generated Code</h2>
+                    <div class="flex gap-2">
+                        <button onclick="copyCode(this)" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium text-white transition-colors flex items-center gap-1">
+                            📋 Copy
+                        </button>
+                        <button onclick="downloadCode()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded text-xs font-medium text-white transition-colors flex items-center gap-1">
+                            ⬇ Download
+                        </button>
+                    </div>
+                </div>
+                <pre id="output" class="flex-grow max-h-[500px] overflow-y-auto theme-csharp font-mono text-sm"></pre>
+            </div>
+        </div>
+
+        <div class="cli-section rounded-xl p-12 text-center mb-12 relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500"></div>
+            <div class="max-w-3xl mx-auto relative z-10">
+                <h2 class="text-3xl font-bold text-white mb-3">🚀 Bring AutoTest to your terminal.</h2>
+                <p class="text-slate-300 text-lg mb-8">Automate test creation without leaving VS Code using our Go CLI.</p>
+
+                <div class="terminal-box mb-8 mx-auto max-w-xl text-left transform group-hover:scale-105 transition-transform duration-500">
+                    <div class="flex items-center mb-3 border-b border-gray-800 pb-2">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span class="ml-4 text-xs text-slate-500 font-mono">zsh — 80x24</span>
+                    </div>
+                    <div>
+                        <span class="text-green-400 font-bold">➜</span> <span class="text-blue-400">~</span> <span class="text-slate-300">go install github.com/orchaxon/autotest@latest</span><br>
+                        <span class="text-slate-500">Downloading binary... 100%</span><br>
+                        <br>
+                        <span class="text-green-400 font-bold">➜</span> <span class="text-blue-400">~</span> <span class="text-slate-300">autotest -lang csharp -class OrderService</span><br>
+                        <span class="text-purple-400">⚡ OrchAxon AutoTest v1.0</span><br>
+                        <span class="text-green-400">✓ Generated PaymentServiceTests.cs (0.04s)</span>
+                    </div>
+                </div>
+
+                <div id="waitlist-container" class="max-w-md mx-auto mt-8">
+                    <div class="flex gap-2">
+                        <input type="email" id="waitlistEmail" 
+                            placeholder="seu@email.com" 
+                            class="flex-1 px-4 py-3 rounded-lg bg-slate-900 border border-slate-700 focus:border-purple-500 text-white placeholder-slate-500 outline-none transition-all"
+                            onkeypress="if(event.key === 'Enter') joinWaitlist()">
+                        
+                        <button onclick="joinWaitlist()" 
+                                class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-all transform hover:scale-105 shadow-lg shadow-purple-500/20">
+                            Join Waitlist
+                        </button>
+                    </div>
+                    <p class="text-slate-500 text-xs mt-3">Sustained by OrchAxon Labs. No spam.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center text-slate-500 text-sm py-8 border-t border-slate-800 mt-auto">
+        <p>Developed by <span class="text-purple-400 font-bold">OrchAxon Labs</span></p>
+    </footer>
+
+    <div id="modal" class="modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-content bg-slate-800 rounded-xl max-w-2xl w-full p-6 border border-slate-700 shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">📋 JSON Structure</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="mb-6">
+                <p class="text-slate-300 text-sm mb-4">Use the structure below to define tests directly via JSON:</p>
+                <div class="relative group">
+                    <pre class="text-sm bg-slate-900 p-4 rounded-lg border border-slate-700"><span class="keyword">{</span>
+  <span class="string">"lang"</span>: <span class="string">"csharp"</span>, <span class="comment">// csharp, kotlin, typescript, java, php</span>
+  <span class="string">"class"</span>: <span class="string">"PaymentService"</span>,
+  <span class="string">"method"</span>: <span class="string">"Process"</span>,
+  <span class="string">"cases"</span>: [
+    <span class="string">"Should_Return_True_If_Valid"</span>,
+    <span class="string">"Should_Throw_Exception_If_Offline"</span>
+  ]
+<span class="keyword">}</span></pre>
+                    <button onclick="copyModalExample()" class="absolute top-2 right-2 px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs text-white transition-opacity">
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-700 rounded p-4 mb-6">
+                <h4 class="text-sm font-bold text-slate-300 mb-2">💡 Quick Tips:</h4>
+                <ul class="text-sm text-slate-400 space-y-1 list-disc list-inside font-mono">
+                    <li><strong class="text-blue-400">lang:</strong> "csharp", "kotlin", "typescript", "java", "php"</li>
+                    <li><strong class="text-blue-400">class:</strong> The class under test</li>
+                    <li><strong class="text-blue-400">method:</strong> The specific method being tested</li>
+                    <li><strong class="text-blue-400">cases:</strong> Array of test descriptions</li>
+                </ul>
+            </div>
+
+            <button onclick="closeModal()" class="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-bold text-white transition-colors">
+                Got it, let's code!
+            </button>
+        </div>
+    </div>
+
+    <script src="https://orchaxon-nexus.netlify.app/tracker.js?v=2" data-project="autotest-gen" id="orchaxon-tracker" async></script>
+
+    <script src="./app.js"></script>
+</body>
+</html>
