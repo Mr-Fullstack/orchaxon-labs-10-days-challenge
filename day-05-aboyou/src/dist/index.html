@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta name="view-transition" content="same-origin">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bem-vindo ao Aboyou</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                extend: { colors: { primary: '#6d28d9', surface: '#F8F9FD' } }
+            }
+        }
+
+        // 🛑 LÓGICA DE ROTEAMENTO (O GUARDA)
+        if (localStorage.getItem('aboyou_onboarded') === 'true') {
+            const isDesktop = window.innerWidth > 1024;
+            window.location.href = isDesktop ? './desktop/' : './mobile/';
+        }
+    </script>
+
+    <style>
+        body { background-color: #6d28d9; color: white; overflow: hidden; }
+        
+        /* CSS Snap Slider */
+        .slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            height: 80vh;
+        }
+        .slide {
+            flex: 0 0 100%;
+            scroll-snap-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        
+        /* Bottom Curve */
+        .curve-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25vh;
+            background: #6d28d9;
+            border-top-left-radius: 40px;
+            border-top-right-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 2rem;
+            z-index: 10;
+        }
+        
+        /* White Card Effect */
+        .white-card {
+            background: #F8F9FD;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 75vh;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="white-card">
+        <div class="slider hide-scroll" id="slider">
+            
+            <div class="slide">
+                <div class="mb-8 relative">
+                    <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-white text-4xl">
+                            <i class="ph-fill ph-user"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-4xl font-extrabold text-primary tracking-tight">Aboyou</h1>
+                </div>
+                <p class="text-slate-600 font-bold text-lg leading-relaxed max-w-xs">
+                    Olá, tudo bem! Muito bom ter você aqui, você está no caminho certo para o autoconhecimento.
+                </p>
+            </div>
+
+            <div class="slide">
+                <div class="mb-8">
+                    <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-white text-4xl">
+                            <i class="ph-fill ph-house"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-4xl font-extrabold text-primary tracking-tight">Sinta-se em casa</h1>
+                </div>
+                <p class="text-slate-600 font-bold text-lg leading-relaxed max-w-xs">
+                    Sinta-se confortável e à vontade, aqui é seu espaço, logo estará se sentindo em casa.
+                </p>
+            </div>
+
+            <div class="slide">
+                <div class="mb-8">
+                    <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center text-white text-4xl">
+                            <i class="ph-fill ph-brain"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-4xl font-extrabold text-primary tracking-tight">Seu Aliado</h1>
+                </div>
+                <p class="text-slate-600 font-bold text-lg leading-relaxed max-w-xs">
+                    O app será seu aliado nessa grande jornada em busca do seu intelecto interior.
+                </p>
+            </div>
+
+        </div>
+        
+        <div class="absolute bottom-20 w-full flex justify-center gap-2 z-20">
+            <div class="w-2 h-2 rounded-full bg-primary transition-all dot active" id="dot-0"></div>
+            <div class="w-2 h-2 rounded-full bg-primary/30 transition-all dot" id="dot-1"></div>
+            <div class="w-2 h-2 rounded-full bg-primary/30 transition-all dot" id="dot-2"></div>
+        </div>
+    </div>
+
+    <div class="curve-container px-8">
+        <div class="flex justify-between items-center w-full max-w-md mx-auto">
+            
+            <button onclick="prevSlide()" class="flex items-center gap-2 text-white/80 font-bold hover:text-white transition-colors" id="btn-prev">
+                <i class="ph-bold ph-arrow-left text-xl"></i> Retroceder
+            </button>
+
+            <button onclick="nextSlide()" class="flex items-center gap-2 text-white font-bold hover:text-white/90 transition-colors" id="btn-next">
+                Continuar <i class="ph-bold ph-arrow-right text-xl"></i>
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('slider');
+        const dots = document.querySelectorAll('.dot');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        let currentSlide = 0;
+        const totalSlides = 3;
+
+        // Atualiza estado (Dots e Botões)
+        function updateState() {
+            // Update Dots
+            dots.forEach((dot, index) => {
+                if(index === currentSlide) {
+                    dot.classList.remove('bg-primary/30');
+                    dot.classList.add('bg-primary', 'w-6'); // Estica o ativo
+                } else {
+                    dot.classList.add('bg-primary/30');
+                    dot.classList.remove('bg-primary', 'w-6');
+                }
+            });
+
+            // Update Buttons
+            btnPrev.style.opacity = currentSlide === 0 ? '0' : '1';
+            btnPrev.style.pointerEvents = currentSlide === 0 ? 'none' : 'auto';
+
+            if (currentSlide === totalSlides - 1) {
+                btnNext.innerHTML = 'Começar <i class="ph-bold ph-check text-xl"></i>';
+            } else {
+                btnNext.innerHTML = 'Continuar <i class="ph-bold ph-arrow-right text-xl"></i>';
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                scrollToSlide();
+            } else {
+                finishOnboarding();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                scrollToSlide();
+            }
+        }
+
+        function scrollToSlide() {
+            const width = slider.clientWidth;
+            slider.scrollTo({ left: width * currentSlide, behavior: 'smooth' });
+            updateState();
+        }
+
+        function finishOnboarding() {
+            // Salva que terminou
+            localStorage.setItem('aboyou_onboarded', 'true');
+            
+            // Redireciona
+            const isDesktop = window.innerWidth > 1024;
+            // Efeito visual de saída
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s';
+            
+            setTimeout(() => {
+                window.location.href = isDesktop ? './desktop/' : './mobile/';
+            }, 500);
+        }
+
+        // Listener para Swipe Manual (Scroll)
+        slider.addEventListener('scroll', () => {
+            const width = slider.clientWidth;
+            const newIndex = Math.round(slider.scrollLeft / width);
+            if (newIndex !== currentSlide) {
+                currentSlide = newIndex;
+                updateState();
+            }
+        });
+
+        // Init
+        updateState();
+    </script>
+</body>
+</html>

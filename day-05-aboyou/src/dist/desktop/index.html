@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- <meta name="view-transition" content="same-origin"> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aboyou Desktop | Autoconhecimento</title> 
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+     <link rel="manifest" href="../manifest.json">
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { fontFamily: { sans: ['Nunito', 'sans-serif'] }, extend: { colors: { primary: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9' }, surface: '#F8F9FD', } } } }
+
+        // 🛑 LÓGICA DE DETECÇÃO DE MOBILE (REDIRECT/WARNING)
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 1024) {
+                document.getElementById('mobile-warning').classList.remove('hidden');
+            }
+        });
+        
+        // Listener para resize (caso o usuário diminua a janela)
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                document.getElementById('mobile-warning').classList.remove('hidden');
+            } else {
+                document.getElementById('mobile-warning').classList.add('hidden');
+            }
+        });
+    </script>
+
+    <script src="../lang.js" defer></script>
+   
+
+    <style>
+        body { background-color: #F8F9FD; }
+        .sidebar-link { transition: all 0.2s; }
+        .sidebar-link:hover { transform: translateX(5px); }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-surface dark:bg-slate-950 text-slate-600 dark:text-slate-400 h-screen flex overflow-hidden transition-colors duration-300">
+
+    <div id="mobile-warning" class="hidden fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-6 text-center">
+        <div class="max-w-xs animate-fade-in">
+            <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-4xl animate-pulse">
+                <i class="ph-fill ph-device-mobile"></i>
+            </div>
+            
+            <h2 class="text-2xl font-extrabold text-white mb-2">Tela Pequena Detectada</h2>
+            <p class="text-slate-400 mb-8 text-sm">
+                A versão Desktop precisa de mais espaço. Para a melhor experiência no seu dispositivo, use o App Mobile.
+            </p>
+            
+            <a href="../mobile/index.html" class="block w-full py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-2xl font-bold text-lg shadow-lg shadow-primary-500/30 transition-transform hover:scale-105 active:scale-95">
+                Abrir App Mobile
+            </a>
+        </div>
+    </div>
+
+    <aside class="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col p-6 z-20 transition-colors">
+        <div class="flex items-center gap-3 mb-10">
+            <div class="w-10 h-10  rounded-xl flex items-center justify-center text-white text-xl shadow-lg shadow-primary-500/30">
+                <img src="../logo.png" alt="">
+                <!-- <i class="ph-fill ph-heart"></i> -->
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-800 dark:text-white tracking-tight">Aboyou</h1>
+        </div>
+
+        <nav class="space-y-2 flex-1">
+            <button id="nav-home" onclick="switchTab('home')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-50 dark:bg-slate-800 text-primary-600 dark:text-primary-400 font-bold border border-transparent">
+                <i class="ph-fill ph-house text-xl"></i> Início
+            </button>
+            <button id="nav-goals" onclick="switchTab('goals')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+                <i class="ph-bold ph-trophy text-xl"></i> Metas
+            </button>
+            <button id="nav-diary" onclick="switchTab('diary')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+                <i class="ph-bold ph-notebook text-xl"></i> Diário
+            </button>
+            <button id="nav-tools" onclick="switchTab('tools')" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold border border-transparent hover:border-slate-100 dark:hover:border-slate-700">
+                <i class="ph-bold ph-flower-lotus text-xl"></i> Atividades
+            </button>
+        </nav>
+
+        <div class="mt-auto flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border border-slate-100 dark:border-slate-700" onclick="openSettings()">
+            <div class="w-10 h-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-primary-600 dark:text-primary-400 shadow-sm"><i class="ph-fill ph-user"></i></div>
+            <div class="flex-1 overflow-hidden">
+                <p class="text-sm font-bold text-slate-800 dark:text-white truncate" id="user-name-display">Visitante</p>
+                <p class="text-xs text-slate-400">Configurações</p>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-8 relative scroll-smooth">
+        <div class="max-w-6xl mx-auto">
+            
+            <div class="flex justify-between items-center mb-10">
+                <div class="greeting">
+                    <p class="text-slate-400 font-bold text-sm uppercase tracking-wider mb-1" id="date-display">Hoje</p>
+                    <h2 class="text-4xl font-extrabold text-slate-800 dark:text-white">Visão Geral</h2>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="openMainAction()" class="new-register flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-transform hover:-translate-y-1 active:translate-y-0">
+                        <i class="ph-bold ph-plus text-xl"></i> Novo Registro
+                    </button>
+                </div>
+            </div>
+
+            <section id="tab-home" class="space-y-8 animate-fade-in">
+            <div id="home-insight-card" class="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-[2.5rem] p-10 text-white shadow-xl shadow-violet-200/50 dark:shadow-none relative overflow-hidden transition-all duration-200 group hover:scale-[1.01]">
+            
+                <!-- <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-white/15 transition-colors"></div> -->
+                <!-- <div class="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-20 -mb-20 blur-2xl"></div> -->
+                
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="max-w-2xl">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-md">
+                                <i class="ph-fill ph-sparkle text-yellow-300 text-2xl"></i>
+                            </div>
+                            <span class="text-sm font-bold uppercase tracking-widest text-violet-100">Resumo da Semana</span>
+                        </div>
+                        
+                        <h2 id="home-insight-text" class="text-4xl font-extrabold leading-tight mb-3">
+                            Analisando seus sentimentos...
+                        </h2>
+                        <p id="home-insight-sub" class="text-xl text-violet-100 opacity-90 font-medium">
+                            Faça seu primeiro check-in para gerar insights.
+                        </p>
+                    </div>
+
+                    <button onclick="openMainAction()" class="hidden lg:flex items-center gap-2 bg-white text-violet-600 px-8 py-4 rounded-2xl font-bold shadow-lg hover:bg-violet-50 transition-colors transform hover:-translate-y-1">
+                        Registrar Humor <i class="ph-bold ph-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
+                        <div class="flex justify-between mb-6">
+                            <h3 class="font-bold text-xl text-slate-800 dark:text-white">Humor Geral</h3>
+                            <select class="bg-slate-50 dark:bg-slate-800 border-none text-xs font-bold text-slate-500 rounded-lg px-3 py-1 cursor-pointer outline-none">
+                                <option>Últimos 30 dias</option>
+                            </select>
+                        </div>
+                        <div class="h-72 w-full">
+                            <canvas id="moodChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 flex flex-col">
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 text-center flex-1 flex flex-col justify-center items-center transition-colors">
+                            <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4 text-3xl"><i class="ph-fill ph-check-circle"></i></div>
+                            <span class="block text-5xl font-extrabold text-slate-800 dark:text-white tracking-tight" id="total-logs">0</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Registros Totais</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 text-center flex-1 flex flex-col justify-center items-center transition-colors">
+                            <div class="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center mb-4 text-3xl"><i class="ph-fill ph-fire"></i></div>
+                            <span class="block text-5xl font-extrabold text-primary-500" id="streak-days">0</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">Dias Seguidos</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-diary" class="hidden animate-fade-in">
+                <h2 class="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Seu Histórico</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="history-list">
+                    </div>
+            </section>
+
+            <section id="tab-tools" class="hidden animate-fade-in">
+                <h2 class="text-2xl font-bold mb-6 text-slate-800 dark:text-white">Ferramentas de Bem-estar</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div onclick="openToolModal('intencao')" class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:border-primary-200 cursor-pointer transition-all hover:-translate-y-1 group">
+                        <div class="w-16 h-16 bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="ph-fill ph-target"></i></div>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white">Definir Intenção</h3>
+                        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed">Comece o dia com clareza. Defina um foco principal.</p>
+                    </div>
+                    <div onclick="openToolModal('gratidao')" class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:border-pink-200 cursor-pointer transition-all hover:-translate-y-1 group">
+                        <div class="w-16 h-16 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform"><i class="ph-fill ph-hands-praying"></i></div>
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white">Gratidão</h3>
+                        <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed">Exercite a positividade listando 3 coisas boas.</p>
+                    </div>
+                    <div class="p-8 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center opacity-60 hover:opacity-100 transition-opacity">
+                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-full flex items-center justify-center text-3xl mb-4"><i class="ph-bold ph-plus"></i></div>
+                        <h3 class="font-bold text-slate-500 dark:text-slate-400">Em Breve</h3>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Respiração & Meditação</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-goals" class="hidden animate-fade-in text-center py-32">
+                <!-- <div class="w-32 h-32 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl text-slate-300 dark:text-slate-600">
+                    <i class="ph-fill ph-cone"></i>
+                </div> -->
+                 <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600 text-3xl">
+                    <i class="ph-fill ph-trophy"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-400 dark:text-slate-500">Em construção</h2>
+                <p class="text-slate-400 mt-2">A gestão de metas desktop chegará na versão 1.1</p>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="main-action-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center transition-opacity duration-300" onclick="handleBackdropClick(event, 'main-action-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 max-w-3xl w-full shadow-2xl transition-all duration-300 opacity-0 scale-95">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white">O que você quer registrar agora?</h2>
+                <button onclick="closeModal('main-action-modal')" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-2xl"><i class="ph-bold ph-x"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-6">
+                <button onclick="selectMood('Feliz', '😄', '', '')" class="group flex flex-col items-center gap-4 p-6 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="text-6xl group-hover:scale-110 transition-transform">😄</div><span class="font-bold text-lg text-slate-600 dark:text-slate-300">Feliz</span>
+                </button>
+                <button onclick="selectMood('Calmo', '😌', '', '')" class="group flex flex-col items-center gap-4 p-6 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="text-6xl group-hover:scale-110 transition-transform">😌</div><span class="font-bold text-lg text-slate-600 dark:text-slate-300">Calmo</span>
+                </button>
+                <button onclick="selectMood('Cansado', '😫', '', '')" class="group flex flex-col items-center gap-4 p-6 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="text-6xl group-hover:scale-110 transition-transform">😫</div><span class="font-bold text-lg text-slate-600 dark:text-slate-300">Cansado</span>
+                </button>
+                <button onclick="selectMood('Irritado', '😠', '', '')" class="group flex flex-col items-center gap-4 p-6 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="text-6xl group-hover:scale-110 transition-transform">😠</div><span class="font-bold text-lg text-slate-600 dark:text-slate-300">Irritado</span>
+                </button>
+                <button onclick="selectMood('Ansioso', '😰', '', '')" class="group flex flex-col items-center gap-4 p-6 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="text-6xl group-hover:scale-110 transition-transform">😰</div><span class="font-bold text-lg text-slate-600 dark:text-slate-300">Ansioso</span>
+                </button>
+                <button onclick="selectMood('Triste', '😢', '', '')" class="group flex flex-col items-center gap-4 p-6 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-3xl transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                    <div class="text-6xl group-hover:scale-110 transition-transform">😢</div><span class="font-bold text-lg text-slate-600 dark:text-slate-300">Triste</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center transition-opacity duration-300" onclick="handleBackdropClick(event, 'checkin-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 rounded-[2rem] p-10 max-w-lg w-full shadow-2xl transition-all duration-300 opacity-0 scale-95">
+            <div class="flex items-center gap-6 mb-8">
+                <div id="modal-emoji" class="text-6xl"></div>
+                <div>
+                    <p class="text-slate-400 text-sm uppercase font-bold tracking-widest">Registrando</p>
+                    <h3 id="modal-mood-text" class="text-4xl font-extrabold text-slate-800 dark:text-white"></h3>
+                </div>
+            </div>
+            <textarea id="modal-note" rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 mb-8 text-lg" placeholder="O que causou isso?"></textarea>
+            <div class="flex justify-end gap-4">
+                <button onclick="closeModal('checkin-modal')" class="px-8 py-4 text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">Cancelar</button>
+                <button onclick="saveCheckin()" class="px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-transform hover:scale-105">Salvar Registro</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tool-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden items-center justify-center transition-opacity duration-300" onclick="handleBackdropClick(event, 'tool-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 rounded-[2rem] p-10 max-w-lg w-full shadow-2xl transition-all duration-300 opacity-0 scale-95">
+            <h3 id="tool-title" class="text-2xl font-extrabold text-slate-800 dark:text-white mb-6">Título</h3>
+            <textarea id="tool-input" rows="4" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500 mb-8 text-lg"></textarea>
+            <div class="flex justify-end gap-4">
+                <button onclick="closeModal('tool-modal')" class="px-8 py-4 text-slate-500 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">Cancelar</button>
+                <button onclick="saveTool()" class="px-10 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 transition-transform hover:scale-105">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+   <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden items-center justify-center transition-opacity duration-300" onclick="handleBackdropClick(event, 'settings-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 rounded-[2rem] p-8 max-w-md w-full shadow-2xl scale-in transform transition-all duration-300 opacity-0 scale-95">
+            <div class="flex justify-between items-center mb-8 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white" data-i18n="settings_title">Configurações</h2>
+                <button onclick="closeSettings()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-8">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-3" data-i18n="settings_name_label">Seu Nome</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="settings-name-input" data-i18n="settings_name_placeholder" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-700 dark:text-slate-200 font-bold focus:ring-2 focus:ring-primary-500 outline-none transition-all">
+                        <button onclick="saveName()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-xl font-bold transition-colors shadow-lg shadow-primary-500/20"><i class="ph-bold ph-check"></i></button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-3" data-i18n="settings_lang_label">Idioma</label>
+                    <div class="flex gap-2">
+                        <button onclick="setLanguage('pt')" class="lang-btn flex-1 py-2 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" data-lang="pt">🇧🇷 PT</button>
+                        <button onclick="setLanguage('en')" class="lang-btn flex-1 py-2 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" data-lang="en">🇺🇸 EN</button>
+                        <button onclick="setLanguage('es')" class="lang-btn flex-1 py-2 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-800" data-lang="es">🇪🇸 ES</button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm"><i class="ph-fill ph-moon"></i></div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" data-i18n="settings_dark_mode">Modo Escuro</span>
+                    </div>
+                    <input type="checkbox" id="theme-toggle" class="w-6 h-6 cursor-pointer accent-primary-600" onclick="toggleTheme()"/>
+                </div>
+
+                <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm"><i class="ph-fill ph-bell"></i></div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" data-i18n="settings_notif_desc">Lembretes</span>
+                    </div>
+                    <input type="checkbox" id="notif-toggle" class="w-6 h-6 cursor-pointer accent-primary-600" onclick="toggleNotifications()"/>
+                </div>
+
+                <div class="bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg shadow-violet-500/20">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 blur-xl"></div>
+                    <div class="relative z-10 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wide opacity-80" data-i18n="settings_plan_label">Seu Plano</span>
+                            <h3 class="text-xl font-extrabold" data-i18n="plan_free">Gratuito</h3>
+                        </div>
+                        <button class="bg-white text-violet-600 px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:scale-105 transition-transform" data-i18n="plan_upgrade">Upgrade</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center pt-6 border-t border-slate-100 dark:border-slate-800 mt-6">
+                <p class="text-xs font-bold text-slate-400">Aboyou v1.0 Desktop</p>
+                <p class="text-[10px] text-slate-300 mt-1">OrchAxon Labs</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="ai-insight-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden items-center justify-center transition-opacity duration-300" onclick="handleBackdropClick(event, 'ai-insight-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl scale-in relative overflow-hidden transform transition-all duration-300 opacity-0 scale-95">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary-400 to-pink-400"></div>
+            
+            <div class="text-center">
+                <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl animate-pulse ring-4 ring-primary-50 dark:ring-slate-800">
+                    🌱
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-4" data-i18n="ai_modal_title">Insight do Aboyou</h3>
+                
+                <div id="ai-content" class="text-slate-600 dark:text-slate-300 text-lg leading-relaxed min-h-[80px] flex items-center justify-center font-medium">
+                    </div>
+            </div>
+
+            <button onclick="closeModal('ai-insight-modal')" class="mt-8 w-full py-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm transition-colors uppercase tracking-wider">
+                Obrigado
+            </button>
+        </div>
+    </div>
+    <script src="https://orchaxon-nexus.netlify.app/tracker.js?v=2" data-project="aboyou-desktop" id="orchaxon-tracker" async></script>
+    <script src="../app.js" defer></script>
+</body>
+</html>

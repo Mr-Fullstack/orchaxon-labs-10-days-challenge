@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta name="theme-color" content="#7C4DFF">
+    <meta name="view-transition" content="same-origin">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aboyou | Autoconhecimento</title>
+  
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="stylesheet" href="../styles.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../lang.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                fontFamily: { sans: ['Nunito', 'sans-serif'] },
+                extend: {
+                    colors: {
+                        primary: { 50: '#f5f3ff', 100: '#ede9fe', 500: '#8b5cf6', 600: '#7c3aed', 700: '#6d28d9' }, 
+                        surface: '#F8F9FD', 
+                    }
+                }
+            }
+        }
+
+
+        // Verifica tamanho da tela ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth > 1024) {
+                document.getElementById('desktop-warning').classList.remove('hidden');
+            }
+        });
+    </script>
+
+    <style>
+        body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .tap-effect:active { transform: scale(0.95); transition: transform 0.1s; }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+        .swipe-handle { touch-action: none; }
+        .floating-btn { box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.5); }
+        .toggle-checkbox:checked { right: 0; border-color: #8b5cf6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #8b5cf6; }
+    </style>
+</head>
+<body class="bg-surface dark:bg-slate-950 text-slate-600 dark:text-slate-400 h-screen flex flex-col overflow-hidden select-none transition-colors duration-300">
+
+    <!-- 🛑 AVISO DESKTOP (BLOCKER) -->
+   
+    <div id="desktop-warning" class="hidden fixed inset-0 z-[100] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-6">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md text-center shadow-2xl border border-white/10 relative overflow-hidden">
+            <!-- Background Glow -->
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-500 to-pink-500"></div>
+            
+            <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-6 text-primary-600 text-4xl animate-bounce">
+                <i class="ph-fill ph-desktop"></i>
+            </div>
+            
+            <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mb-2">Tela Grande Detectada!</h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-8">
+                O Aboyou Mobile foi feito para caber na palma da mão. Para aproveitar melhor seu espaço, use nossa versão Desktop.
+            </p>
+            
+            <a href="../desktop/index.html" class="block w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-primary-500/30 transition-transform hover:scale-105">
+                Abrir Versão Desktop <i class="ph-bold ph-arrow-right ml-2"></i>
+            </a>
+            
+            <button onclick="document.getElementById('desktop-warning').classList.add('hidden')" class="mt-4 text-sm text-slate-400 hover:text-slate-300 underline">
+                Continuar na versão mobile (não recomendado)
+            </button>
+        </div>
+    </div>
+
+    <main class="flex-grow overflow-y-auto hide-scrollbar p-6 pb-32 relative" id="main-container">
+        
+        
+        <section id="tab-home" class="fade-in space-y-6">
+            <div class="flex justify-between items-center mt-2">
+                <div>
+                    <p class="text-slate-400 text-sm font-semibold" id="date-display" data-i18n="today">Hoje</p>
+                    <h1 class="text-3xl font-extrabold text-slate-800 dark:text-white"><span data-i18n="hello">Olá,</span> <span id="user-name-display">Visitante</span> 👋</h1>
+                </div>
+                <button onclick="openSettings()" class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-primary-600 dark:text-primary-400 border border-slate-100 dark:border-slate-700 transition-colors tap-effect">
+                    <i class="ph-fill ph-user text-2xl"></i>
+                </button>
+            </div>
+            <div id="home-insight-card" class="bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-[2rem] p-6 text-white shadow-lg shadow-violet-200 dark:shadow-none mb-6 relative overflow-hidden transition-all duration-1000 active:scale-[0.98]">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-black/5 rounded-full -ml-8 -mb-8"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                            <i class="ph-fill ph-sparkle text-yellow-300 text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-violet-100">Resumo da Semana</span>
+                    </div>
+                    
+                    <p id="home-insight-text" class="text-xl font-extrabold leading-snug">
+                        Analisando seus sentimentos...
+                    </p>
+                    <p id="home-insight-sub" class="text-sm text-violet-100 mt-2 opacity-90">
+                        Toque em + para registrar hoje.
+                    </p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-slate-200" data-i18n="mood_title">Seu Humor</h2>
+                </div>
+                <div class="h-64 relative w-full">
+                    <canvas id="moodChart"></canvas>
+                </div>
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl text-center">
+                        <span class="block text-2xl font-extrabold text-slate-800 dark:text-white" id="total-logs">0</span>
+                        <span class="text-xs font-bold text-slate-400 uppercase">Total</span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl text-center">
+                        <span class="block text-2xl font-extrabold text-primary-500" id="streak-days">0</span>
+                        <span class="text-xs font-bold text-slate-400 uppercase">Streak</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div id="install-card" class="hidden bg-slate-800 dark:bg-slate-900 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden border border-slate-700">
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-2xl">📲</div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg" data-i18n="install_title">Instalar App</h3>
+                        <p class="text-slate-300 text-xs" data-i18n="install_desc">Acesse offline.</p>
+                    </div>
+                </div>
+                <button onclick="installPWA()" class="mt-4 w-full py-3 bg-primary-600 hover:bg-primary-500 rounded-xl font-bold text-sm transition-colors tap-effect" data-i18n="install_btn">
+                    Adicionar à Tela Inicial
+                </button>
+            </div> -->
+        </section>
+
+        <section id="tab-goals" class="hidden fade-in space-y-4">
+            <h1 class="text-2xl font-extrabold text-slate-800 dark:text-white" data-i18n="goals_title">Minhas Metas</h1>
+            <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-8 text-center border border-slate-100 dark:border-slate-800">
+                <div class="w-20 h-20 bg-primary-100 dark:bg-primary-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600 text-3xl">
+                    <i class="ph-fill ph-trophy"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white" data-i18n="goals_soon_title">Em breve!</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-2" data-i18n="goals_soon_desc">Estamos preparando...</p>
+            </div>
+        </section>
+
+        <section id="tab-diary" class="hidden fade-in space-y-4">
+            <h1 class="text-2xl font-extrabold text-slate-800 dark:text-white" data-i18n="diary_title">Diário</h1>
+            <div class="bg-white dark:bg-slate-900 rounded-t-3xl p-2 min-h-[60vh] shadow-sm transition-colors">
+                <h3 class="text-primary-600 dark:text-primary-400 font-bold text-sm uppercase tracking-wider mb-4 px-4 mt-4 flex items-center gap-2">
+                    <i class="ph-fill ph-notebook"></i> <span data-i18n="diary_history">Histórico</span>
+                </h3>
+                <div id="history-list" class="space-y-3 pb-20"></div>
+            </div>
+        </section>
+
+        <section id="tab-tools" class="hidden fade-in space-y-6">
+            <h1 class="text-2xl font-extrabold text-slate-800 dark:text-white mb-2" data-i18n="activities_title">Atividades</h1>
+            <div onclick="openToolModal('intencao')" class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 tap-effect cursor-pointer group transition-colors flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 flex items-center justify-center shrink-0"><i class="ph-fill ph-target text-2xl"></i></div>
+                <div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight" data-i18n="tool_intention_title">Definir Intenção</h3><p class="text-slate-500 dark:text-slate-400 text-xs mt-1" data-i18n="tool_intention_desc">Foco do dia.</p></div>
+            </div>
+            <div onclick="openToolModal('gratidao')" class="bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 tap-effect cursor-pointer group transition-colors flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300 flex items-center justify-center shrink-0"><i class="ph-fill ph-hands-praying text-2xl"></i></div>
+                <div><h3 class="text-lg font-bold text-slate-800 dark:text-white leading-tight" data-i18n="tool_gratitude_title">Praticar Gratidão</h3><p class="text-slate-500 dark:text-slate-400 text-xs mt-1" data-i18n="tool_gratitude_desc">3 coisas boas.</p></div>
+            </div>
+            <div class="p-4 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center gap-4 opacity-60">
+                <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center shrink-0"><i class="ph-bold ph-plus text-xl"></i></div>
+                <div><h3 class="text-sm font-bold text-slate-500 dark:text-slate-400" data-i18n="tool_soon_title">Mais em breve</h3><p class="text-slate-400 dark:text-slate-500 text-xs" data-i18n="tool_soon_desc">...</p></div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 w-full bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 pb-safe z-40 transition-colors">
+        <div class="grid grid-cols-5 items-center h-20 px-2 max-w-md mx-auto relative">
+            <button onclick="switchTab('home')" class="nav-btn active flex flex-col items-center gap-1 text-primary-600 dark:text-primary-400" id="nav-home">
+                <i class="ph-fill ph-house text-2xl"></i><span class="text-[9px] font-bold" data-i18n="tab_home">Início</span>
+            </button>
+            <button onclick="switchTab('goals')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" id="nav-goals">
+                <i class="ph-bold ph-trophy text-2xl"></i><span class="text-[9px] font-bold" data-i18n="tab_goals">Metas</span>
+            </button>
+            <div class="relative -top-6 flex justify-center">
+                <button onclick="openMainAction()" class="w-16 h-16 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center shadow-lg floating-btn tap-effect transition-transform border-4 border-surface dark:border-slate-950">
+                    <i class="ph-bold ph-plus text-3xl"></i>
+                </button>
+            </div>
+            <button onclick="switchTab('diary')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" id="nav-diary">
+                <i class="ph-bold ph-notebook text-2xl"></i><span class="text-[9px] font-bold" data-i18n="tab_diary">Diário</span>
+            </button>
+            <button onclick="switchTab('tools')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" id="nav-tools">
+                <i class="ph-bold ph-flower-lotus text-2xl"></i><span class="text-[9px] font-bold" data-i18n="tab_activities">Ativ.</span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="main-action-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col justify-end transition-opacity duration-300" onclick="handleBackdropClick(event, 'main-action-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 w-full rounded-t-[2.5rem] p-8 pb-12 transform transition-transform duration-300 translate-y-full">
+            <div class="swipe-handle w-full h-8 -mt-6 flex items-center justify-center"><div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div></div>
+            <h2 class="text-xl font-bold text-center text-slate-800 dark:text-white mb-8" data-i18n="mood_title">O que você quer registrar?</h2>
+            <div class="grid grid-cols-3 gap-6 mb-6">
+                <button onclick="selectMood('Feliz', '😄', 'bg-yellow-100', 'text-yellow-600')" class="tap-effect flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-3xl bg-yellow-50 dark:bg-yellow-900/20 flex items-center justify-center text-3xl border-2 border-yellow-100 dark:border-yellow-900/50">😄</div>
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400" data-i18n="mood_happy">Feliz</span>
+                </button>
+                <button onclick="selectMood('Calmo', '😌', 'bg-blue-100', 'text-blue-600')" class="tap-effect flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-3xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-3xl border-2 border-blue-100 dark:border-blue-900/50">😌</div>
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400" data-i18n="mood_calm">Calmo</span>
+                </button>
+                <button onclick="selectMood('Cansado', '😫', 'bg-purple-100', 'text-purple-600')" class="tap-effect flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-3xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-3xl border-2 border-purple-100 dark:border-purple-900/50">😫</div>
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400" data-i18n="mood_tired">Cansado</span>
+                </button>
+                <button onclick="selectMood('Irritado', '😠', 'bg-red-100', 'text-red-600')" class="tap-effect flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-3xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-3xl border-2 border-red-100 dark:border-red-900/50">😠</div>
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400" data-i18n="mood_irritated">Irritado</span>
+                </button>
+                <button onclick="selectMood('Ansioso', '😰', 'bg-orange-100', 'text-orange-600')" class="tap-effect flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-3xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-3xl border-2 border-orange-100 dark:border-orange-900/50">😰</div>
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400" data-i18n="mood_anxious">Ansioso</span>
+                </button>
+                <button onclick="selectMood('Triste', '😢', 'bg-gray-100', 'text-gray-600')" class="tap-effect flex flex-col items-center gap-2">
+                    <div class="w-16 h-16 rounded-3xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center text-3xl border-2 border-gray-100 dark:border-gray-700">😢</div>
+                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400" data-i18n="mood_sad">Triste</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex-col justify-end transition-opacity duration-300" onclick="handleBackdropClick(event, 'checkin-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 w-full rounded-t-[2rem] p-6 pb-10 transform transition-transform duration-300 translate-y-full border-t border-white/10">
+            <div class="swipe-handle w-full h-8 -mt-6 flex items-center justify-center"><div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div></div>
+            <div class="flex items-center gap-4 mb-6">
+                <div id="modal-emoji" class="text-4xl"></div>
+                <div>
+                    <p class="text-slate-400 text-xs uppercase font-bold tracking-wide" data-i18n="modal_mood_label">Registrando</p>
+                    <h3 id="modal-mood-text" class="text-2xl font-bold text-slate-800 dark:text-white"></h3>
+                </div>
+            </div>
+            <label class="block text-sm font-bold text-slate-600 dark:text-slate-300 mb-2" data-i18n="modal_context_label">Contexto</label>
+            <textarea id="modal-note" rows="3" data-i18n="modal_context_placeholder" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary-500 mb-6">
+                ...
+            </textarea>
+            <button onclick="saveCheckin()" class="w-full py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-bold text-lg shadow-lg tap-effect" data-i18n="btn_conclude">Concluir</button>
+        </div>
+    </div>
+
+    <!-- <div id="settings-modal" class="fixed inset-0 bg-surface dark:bg-slate-950 z-[70] hidden flex-col transition-opacity duration-300 overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
+            <h2 class="text-xl font-extrabold text-slate-800 dark:text-white" data-i18n="settings_title">Configurações</h2>
+            <button onclick="closeSettings()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400"><i class="ph-bold ph-x text-lg"></i></button>
+        </div>
+        <div class="p-6 space-y-8">
+            <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col items-center gap-4">
+                <div class="w-24 h-24 rounded-full bg-primary-100 dark:bg-slate-800 flex items-center justify-center text-primary-600 dark:text-primary-400 text-4xl mb-2"><i class="ph-fill ph-user"></i></div>
+                <div class="w-full">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2 text-center" data-i18n="settings_name_label">Seu Nome</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="settings-name-input" data-i18n="settings_name_placeholder" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-700 dark:text-slate-200 text-center font-bold">
+                        <button onclick="saveName()" class="bg-primary-600 text-white px-4 rounded-xl font-bold"><i class="ph-bold ph-check"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-4" data-i18n="settings_lang_label">Idioma</h3>
+                <div class="flex gap-2">
+                    <button onclick="setLanguage('pt')" class="lang-btn flex-1 py-2 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm" data-lang="pt">🇧🇷 PT</button>
+                    <button onclick="setLanguage('en')" class="lang-btn flex-1 py-2 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm" data-lang="en">🇺🇸 EN</button>
+                    <button onclick="setLanguage('es')" class="lang-btn flex-1 py-2 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm" data-lang="es">🇪🇸 ES</button>
+                </div>
+            </section>
+            <section class="bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden mb-6">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+                <div class="relative z-10">
+                    <label class="block text-xs font-bold text-violet-200 uppercase tracking-wide mb-1" data-i18n="settings_plan_label">Seu Plano</label>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h3 class="text-2xl font-extrabold" data-i18n="plan_free">Gratuito</h3>
+                            <p class="text-xs text-violet-200 mt-1">Básico • Offline</p>
+                        </div>
+                        <button class="bg-white text-violet-600 px-4 py-2 rounded-xl text-xs font-bold shadow-md active:scale-95 transition-transform" data-i18n="plan_upgrade">
+                            Upgrade
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-4" data-i18n="settings_appearance_label">Aparência</h3>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300"><i class="ph-fill ph-moon"></i></div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" data-i18n="settings_dark_mode">Modo Escuro</span>
+                    </div>
+                    <div class="relative inline-block w-12 h-6 align-middle select-none">
+                        <input type="checkbox" id="theme-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 transition-all duration-300" onclick="toggleTheme()"/>
+                        <label for="theme-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
+            </section>
+            <section class="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 mt-4">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-4" data-i18n="settings_notif_label">Lembretes</h3>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+                            <i class="ph-fill ph-bell"></i>
+                        </div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" data-i18n="settings_notif_desc">Check-ins diários</span>
+                    </div>
+                    <div class="relative inline-block w-12 h-6 align-middle select-none">
+                        <input type="checkbox" id="notif-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 transition-all duration-300" onclick="toggleNotifications()"/>
+                        <label for="notif-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="text-center pt-4"><p class="text-xs font-bold text-slate-400">Aboyou v1.0</p><p class="text-[10px] text-slate-300 mt-1">OrchAxon Labs</p></div>
+        </div>
+    </div> -->
+
+    <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] hidden flex-col justify-end transition-opacity duration-300" onclick="handleBackdropClick(event, 'settings-modal')">
+        
+        <div class="modal-content bg-white dark:bg-slate-900 w-full rounded-t-[2.5rem] p-6 pb-10 transform transition-transform duration-300 translate-y-full border-t border-white/10 max-h-[85vh] overflow-y-auto">
+            
+            <div class="swipe-handle w-full h-8 -mt-6 flex items-center justify-center cursor-grab active:cursor-grabbing">
+                <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+            </div>
+
+            <div class="flex justify-between items-center mb-8 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <h2 class="text-xl font-extrabold text-slate-800 dark:text-white" data-i18n="settings_title">Configurações</h2>
+                <button onclick="closeSettings()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 tap-effect">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 text-center" data-i18n="settings_name_label">Seu Nome</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="settings-name-input" data-i18n="settings_name_placeholder" class="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-700 dark:text-slate-200 font-bold text-center focus:outline-none focus:border-primary-500">
+                        <button onclick="saveName()" class="bg-primary-600 text-white px-4 rounded-xl font-bold tap-effect shadow-lg shadow-primary-500/20"><i class="ph-bold ph-check"></i></button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-3 ml-2" data-i18n="settings_lang_label">Idioma</label>
+                    <div class="flex gap-2">
+                        <button onclick="setLanguage('pt')" class="lang-btn flex-1 py-3 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 tap-effect" data-lang="pt">🇧🇷 PT</button>
+                        <button onclick="setLanguage('en')" class="lang-btn flex-1 py-3 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 tap-effect" data-lang="en">🇺🇸 EN</button>
+                        <button onclick="setLanguage('es')" class="lang-btn flex-1 py-3 rounded-xl border border-slate-100 dark:border-slate-700 font-bold text-sm bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 tap-effect" data-lang="es">🇪🇸 ES</button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm"><i class="ph-fill ph-moon"></i></div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" data-i18n="settings_dark_mode">Modo Escuro</span>
+                    </div>
+                    <div class="relative inline-block w-12 h-6 align-middle select-none">
+                        <input type="checkbox" id="theme-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 transition-all duration-300" onclick="toggleTheme()"/>
+                        <label for="theme-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shadow-sm"><i class="ph-fill ph-bell"></i></div>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" data-i18n="settings_notif_desc">Lembretes</span>
+                    </div>
+                    <div class="relative inline-block w-12 h-6 align-middle select-none">
+                        <input type="checkbox" id="notif-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300 transition-all duration-300" onclick="toggleNotifications()"/>
+                        <label for="notif-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-slate-300 cursor-pointer transition-colors duration-300"></label>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg shadow-violet-500/20 tap-effect">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 blur-xl"></div>
+                    <div class="relative z-10 flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wide opacity-80" data-i18n="settings_plan_label">Seu Plano</span>
+                            <h3 class="text-xl font-extrabold" data-i18n="plan_free">Gratuito</h3>
+                        </div>
+                        <button class="bg-white text-violet-600 px-4 py-2 rounded-lg text-xs font-bold shadow-md" data-i18n="plan_upgrade">Upgrade</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center pt-8">
+                <p class="text-xs font-bold text-slate-400">Aboyou v1.0 Mobile</p>
+                <p class="text-[10px] text-slate-300 mt-1">OrchAxon Labs</p>
+            </div>
+        </div>
+    </div>
+    <div id="tool-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] hidden flex-col justify-end transition-opacity duration-300" onclick="handleBackdropClick(event, 'tool-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 w-full rounded-t-[2rem] p-6 pb-10 transform transition-transform duration-300 translate-y-full">
+            <div class="swipe-handle w-full h-8 -mt-6 flex items-center justify-center"><div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div></div>
+            <h3 id="tool-title" class="text-xl font-bold text-slate-800 dark:text-white mb-4">Título</h3>
+            <textarea id="tool-input" rows="3" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-slate-700 dark:text-slate-200 focus:outline-none focus:border-primary-500 mb-6">
+                 ...
+            </textarea>
+            <button onclick="saveTool()" class="w-full py-4 bg-primary-600 text-white rounded-xl font-bold text-lg shadow-lg tap-effect" data-i18n="btn_save">Salvar</button>
+        </div>
+    </div>
+    <div id="ai-insight-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] hidden items-center justify-center transition-opacity duration-300 px-4" onclick="handleBackdropClick(event, 'ai-insight-modal')">
+        <div class="modal-content bg-white dark:bg-slate-900 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl scale-in relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 to-pink-400"></div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 flex items-center justify-center mx-auto mb-4 text-3xl animate-pulse">
+                    🌱
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2" data-i18n="ai_modal_title">Insight do Aboyou</h3>
+                
+                <div id="ai-content" class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed min-h-[60px] flex items-center justify-center">
+                    </div>
+            </div>
+
+            <button onclick="closeModal('ai-insight-modal')" class="mt-6 w-full py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-xl font-bold text-sm transition-colors">
+                Obrigado
+            </button>
+        </div>
+    </div>
+
+    <div id="pwa-popup" class="fixed bottom-4 left-4 right-4 z-50 hidden transform transition-all duration-500 translate-y-full">
+        <div class="bg-slate-900/95 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-4">
+            <div class="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-primary-500/30">
+                <i class="ph-fill ph-download-simple text-2xl"></i>
+            </div>
+            
+            <div class="flex-1">
+                <h4 class="font-bold text-sm" data-i18n="install_title">Instalar App</h4>
+                <p class="text-xs text-slate-300 mt-0.5" id="pwa-text" data-i18n="install_desc">Adicione à tela inicial para acesso offline.</p>
+            </div>
+
+            <button id="pwa-btn" onclick="triggerInstall()" class="px-4 py-2 bg-white text-slate-900 rounded-lg text-xs font-bold hover:bg-slate-100 transition-colors">
+                Instalar
+            </button>
+            
+            <button onclick="closePwaPopup()" class="text-slate-400 hover:text-white p-1">
+                <i class="ph-bold ph-x"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="ios-prompt" class="fixed inset-0 bg-black/80 z-[100] hidden items-end pb-safe" onclick="this.classList.add('hidden')">
+    <div class="bg-white dark:bg-slate-900 w-full p-6 rounded-t-3xl relative animate-[slideUp_0.3s_ease-out]">
+        <div class="absolute top-4 right-4 text-slate-400"><i class="ph-bold ph-x text-xl"></i></div>
+        <div class="text-center">
+            <div class="text-primary-600 mb-4 text-4xl"><i class="ph-bold ph-export"></i></div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-2">Instalar no iPhone</h3>
+            <p class="text-sm text-slate-500 mb-6">1. Toque no botão <span class="font-bold">Compartilhar</span><br>2. Selecione <span class="font-bold">Adicionar à Tela de Início</span></p>
+            <div class="flex justify-center gap-2 text-slate-400 text-xs">
+                <i class="ph-bold ph-caret-down animate-bounce"></i>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="https://orchaxon-nexus.netlify.app/tracker.js?v=2" data-project="aboyou" id="orchaxon-tracker" async></script>
+   
+    <script src="../app.js"></script>
+</body>
+</html>

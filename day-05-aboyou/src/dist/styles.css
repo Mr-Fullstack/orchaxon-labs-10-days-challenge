@@ -1,0 +1,225 @@
+/* ========================================= */
+/* 1. VIEW TRANSITION API (Navegação Suave) */
+/* ========================================= */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: 0.4s ease-out both fadeOut;
+}
+
+::view-transition-new(root) {
+    animation: 0.4s ease-out both fadeIn;
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: scale(0.98); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(1.02); }
+}
+
+/* Nomeando áreas para transição persistente */
+nav { view-transition-name: bottom-nav; }
+header { view-transition-name: main-header; }
+
+/* ========================================= */
+/* 2. UTILITÁRIOS GERAIS & RESET */
+/* ========================================= */
+body {
+    /* Remove highlight azul no mobile ao tocar */
+    -webkit-tap-highlight-color: transparent;
+    /* Evita efeito elástico no scroll (bounce) */
+    overscroll-behavior-y: none;
+    background-color: #F8F9FD; /* Cor base light */
+}
+
+/* Esconder Scrollbar mas manter funcionalidade */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Efeito de Toque (Feedback Tátil) */
+.tap-effect:active {
+    transform: scale(0.95);
+    transition: transform 0.1s;
+}
+
+/* Área segura do iPhone (notch/barrinha) */
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ========================================= */
+/* 3. COMPONENTES ESPECÍFICOS */
+/* ========================================= */
+
+/* Toggle Switch (Configurações) */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #8b5cf6;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #8b5cf6;
+}
+
+/* Botão Flutuante (FAB) */
+.floating-btn {
+    box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.5);
+}
+
+/* Swipe Handle (Barra dos Modais) */
+.swipe-handle {
+    touch-action: none; /* Importante para o JS capturar o toque */
+}
+
+/* ========================================= */
+/* 4. ANIMAÇÕES CSS (Keyframes) */
+/* ========================================= */
+
+/* Fade In genérico */
+.fade-in {
+    animation: fadeInElement 0.3s ease-out;
+}
+@keyframes fadeInElement {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scale In (Usado nos Modais Desktop) */
+.scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Slide Up (Usado no Onboarding/Mobile) */
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* ========================================= */
+/* 5. AJUSTES ESPECÍFICOS PARA DESKTOP (> 1024px) */
+/* ========================================= */
+
+@media (min-width: 1024px) {
+    
+    /* 1. Isola a Sidebar da animação global */
+    /* Ao dar um nome, o navegador entende que ela é persistente e não deve fazer fade */
+    aside {
+        view-transition-name: desktop-sidebar;
+    }
+
+    /* 2. Isola o Conteúdo Principal */
+    main {
+        view-transition-name: desktop-main;
+    }
+
+    .greeting {
+        view-transition-name: desktop-greeting;
+    }
+
+    .new-register {
+        view-transition-name: desktop-new-register;
+    }
+
+    /* 3. Desativa a animação na RAIZ (Root) para Desktop */
+    /* Isso impede que o fundo branco pisque */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+
+    /* 4. Define animação SÓ para o Conteúdo Principal */
+    /* Um fade suave e rápido, sem mover muito */
+    ::view-transition-old(desktop-main) {
+        animation: 0.1s ease-out both fadeOutDesktop;
+    }
+
+    ::view-transition-new(desktop-main) {
+        animation: 0.1s ease-out both fadeInDesktop;
+    }
+}
+
+/* Animações mais sutis para Desktop (sem zoom/scale exagerado) */
+@keyframes fadeOutDesktop {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-5px); }
+}
+
+@keyframes fadeInDesktop {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ========================================= */
+/* 5. EFEITOS DE VITÓRIA (TOAST & CONFETTI) */
+/* ========================================= */
+
+/* Toast Animation */
+.victory-toast {
+    position: fixed;
+    bottom: 100px; /* Acima da Bottom Bar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px -10px rgba(124, 58, 237, 0.4);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    animation: toastPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Dark Mode Toast */
+.dark .victory-toast {
+    background: rgba(15, 23, 42, 0.95);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: white;
+}
+
+@keyframes toastPop {
+    0% { opacity: 0; transform: translate(-50%, 50px) scale(0.8); }
+    100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes toastExit {
+    to { opacity: 0; transform: translate(-50%, -20px) scale(0.9); }
+}
+
+/* Confetti Particles */
+.confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    top: -10px;
+    z-index: 99;
+    border-radius: 4px;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to { transform: translateY(100vh) rotate(720deg); }
+}
+
+.modal-content {
+    /* Diz ao navegador para preparar a GPU para mexer nisso */
+    will-change: transform, opacity;
+}
