@@ -154,6 +154,7 @@
              /* Impede seleção de texto (sensação de app) */
             -webkit-user-select: none;
             user-select: none;
+            overscroll-behavior-y: none;
         }
         .btn-press:active {
             transform: scale(0.95);
@@ -169,29 +170,17 @@
             background: #FF5722;
             border-radius: 4px;
         }
+        
     /* Permite selecionar texto apenas onde faz sentido (inputs, textareas) */
     input, textarea, [contenteditable="true"] {
         -webkit-user-select: text;
         user-select: text;
     }
 
-    /* BLOQUEIO DE COMPORTAMENTOS DE NAVEGADOR */
-    html, body {
-        /* 1. Impede o "Pull-to-Refresh" (Puxar para atualizar) */
-        overscroll-behavior-y: none;
-        
-        /* 2. Impede o gesto de "Voltar Página" no Mac/iOS (Swipe lateral) */
-        overscroll-behavior-x: none;
-        
-        /* 3. Garante altura total e evita rolagem no corpo principal (quem rola é a main) */
-        height: 100%;
-        overflow: hidden;
-    }
-
-    /* Aplica a rolagem apenas onde queremos (na main) */
+    /* Aplica a rolagem apenas onde queremos (na main)
     #main-container {
-        overscroll-behavior-y: contain; /* Mantém a física de scroll, mas não propaga pro body */
-    }
+        overscroll-behavior-y: contain;  Mantém a física de scroll, mas não propaga pro body 
+    } */
 
     </style>
 </head>
