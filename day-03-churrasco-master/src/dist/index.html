@@ -155,8 +155,6 @@
             -webkit-user-select: none;
             user-select: none;
             overscroll-behavior-y: none; /* O segredo anti-refresh */
-            height: 100%;
-            overflow: hidden; /* Trava o corpo */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -181,11 +179,22 @@
         user-select: text;
     }
 
+    /* 1. Trava a janela inteira */
+    html, body {
+        height: 100%;
+        overflow: hidden; /* Ninguém rola aqui */
+        overscroll-behavior: none; /* Sem efeito elástico no body */
+    }
    /* Área que pode rolar (O conteúdo principal) */
     main {
-        height: 100%;
-        overflow-y: auto; /* Permite scroll aqui dentro */
-        overscroll-behavior-y: contain; /* Mantém a física mas não passa pro body */
+       /* Permite rolar verticalmente */
+        overflow-y: auto; 
+        
+        /* Mantém a física de scroll nativa (momentum) no iOS */
+        -webkit-overflow-scrolling: touch; 
+        
+        /* O elástico acontece AQUI DENTRO, não na página toda */
+        overscroll-behavior-y: contain;
     }
 
     </style>
