@@ -154,8 +154,12 @@
              /* Impede seleção de texto (sensação de app) */
             -webkit-user-select: none;
             user-select: none;
-            overscroll-behavior-y: none;
+            overscroll-behavior-y: none; /* O segredo anti-refresh */
+            height: 100%;
+            overflow: hidden; /* Trava o corpo */
+            -webkit-tap-highlight-color: transparent;
         }
+
         .btn-press:active {
             transform: scale(0.95);
         }
@@ -170,17 +174,19 @@
             background: #FF5722;
             border-radius: 4px;
         }
-        
+
     /* Permite selecionar texto apenas onde faz sentido (inputs, textareas) */
     input, textarea, [contenteditable="true"] {
         -webkit-user-select: text;
         user-select: text;
     }
 
-    /* Aplica a rolagem apenas onde queremos (na main)
-    #main-container {
-        overscroll-behavior-y: contain;  Mantém a física de scroll, mas não propaga pro body 
-    } */
+   /* Área que pode rolar (O conteúdo principal) */
+    main {
+        height: 100%;
+        overflow-y: auto; /* Permite scroll aqui dentro */
+        overscroll-behavior-y: contain; /* Mantém a física mas não passa pro body */
+    }
 
     </style>
 </head>
@@ -203,7 +209,7 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <main id="main-container" class="container mx-auto px-4 -mt-14 relative z-20 max-w-7xl flex-grow">
+    <main class="container mx-auto px-4 -mt-14 relative z-20 max-w-7xl flex-grow">
         
         <div class="flex flex-col lg:flex-row gap-6 justify-center items-start">
             
